@@ -7,6 +7,11 @@ import scala.xml.{Node => XmlNode, _}
 
 /** Side-effectly mounts an `xml.Node` to a `org.scalajs.dom.raw.Node`. */
 object mount {
+
+  final case class Embeddable(e: Elem, f: DomNode => Cancelable)
+  implicit val xmlElementEmbeddableEmbeddable: XmlElementEmbeddable[Embeddable] = null
+  implicit val xmlElementEmbeddableNodeBuffer: XmlElementEmbeddable[NodeBuffer] = null
+
   private val onMountAtt   = "mhtml-onmount"
   private val onUnmountAtt = "mhtml-onunmount"
 
@@ -51,8 +56,23 @@ object mount {
           }
           Cancelable { () => c1.cancel; c2.cancel }
         case Some(x)     => mountNode(parent, new Atom(x), startPoint)
+
+        case Embeddable( e @ Elem(_, label, metadata, scope, child @ _*), f) =>
+          val elemNode = e.namespace match {
+            case Some(ns) => dom.document.createElementNS(ns, label)
+            case None     => dom.document.createElement(label)
+          }
+          val cancelMetadata = metadata.map { m => mountMetadata(elemNode, scope, m, m.value) }
+          val cancelChild = child.map(c => mountNode(elemNode, c, None))
+          parent.mountHere(elemNode, startPoint)
+          val c1 = f(elemNode)
+          Cancelable { () => cancelMetadata.foreach(_.cancel); cancelChild.foreach(_.cancel); c1.cancel }
+
         case None        => Cancelable.empty
-        case seq: Seq[_] => mountNode(parent, new Group(seq.map(new Atom(_))), startPoint)
+        case nb: scala.xml.NodeBuffer =>
+          val cs = nb.map(node => mountNode(parent, node, None))
+          Cancelable { () => cs.foreach(_.cancel) }
+        case seq: Seq[_] => mountNode(parent, Group(seq.map(new Atom(_))), startPoint)
         case primitive   =>
           val content = primitive.toString
           if (!content.isEmpty)
