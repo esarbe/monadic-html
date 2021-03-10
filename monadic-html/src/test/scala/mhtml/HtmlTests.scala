@@ -2,12 +2,12 @@ package mhtml
 
 import org.scalajs.dom
 import org.scalajs.dom.MouseEvent
-import org.scalajs.dom.raw.HTMLElement
-import org.scalatest.FunSuite
+import org.scalajs.dom.raw.{HTMLElement, MouseEventInit}
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.xml.{Elem, Group}
 
-class HtmlTests extends FunSuite {
+class HtmlTests extends AnyFunSuite {
 
   test("Mounting Elem") {
     val div = dom.document.createElement("div")
@@ -250,10 +250,23 @@ class HtmlTests extends FunSuite {
       case true  => styleClick
     }
 
+
+
     def mouseClick(hTMLElement: HTMLElement) = {
-      val evt = dom.document.createEvent("MouseEvents").asInstanceOf[MouseEvent]
-      evt.initMouseEvent("click", true, true, dom.window,
-        0, 0, 0, 0, 0, false, false, false, false, 0, null)
+
+      val init = new MouseEventInit {}
+      init.screenX = 0
+      init.screenY = 0
+      init.pageX = 0
+      init.pageY = 0
+      init.clientY = 0
+      init.clientX = 0
+      init.relatedTarget = null
+      init.button = 0
+      init.buttons = 0
+
+      val evt = new MouseEvent("click", init)
+
       hTMLElement.dispatchEvent(evt)
     }
 

@@ -1,8 +1,9 @@
 package mhtml
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class RxTests extends FunSuite {
+
+class RxTests extends AnyFunSuite {
   implicit class MoreImpureStuff[A](impure: RxImpureOps[A]) {
     def value: A = {
       var v: Option[A] = None
