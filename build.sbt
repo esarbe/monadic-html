@@ -1,8 +1,8 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-val scalajsdom = "0.9.7"
-val scalatest  = "3.0.8"
-val cats       = "2.0.0"
+val scalajsdom = "1.0.0"
+val scalatest  = "3.2.6"
+val cats       = "2.4.2"
 
 crossScalaVersions in ThisBuild := Seq("2.13.1", "2.12.10")
 scalaVersion       in ThisBuild := crossScalaVersions.value.head
@@ -51,8 +51,8 @@ lazy val `examples` = project
   .settings(noPublishSettings: _*)
   .settings(
     test := {},
-    emitSourceMaps := true,
-    libraryDependencies += "com.github.japgolly.scalacss" %%% "core" % "0.6.0-RC1",
+    //emitSourceMaps := true,
+    libraryDependencies += "com.github.japgolly.scalacss" %%% "core" % "0.7.0",
     artifactPath in (Compile, fastOptJS) :=
       ((crossTarget in (Compile, fastOptJS)).value /
         ((moduleName in fastOptJS).value + "-opt.js")))
@@ -72,7 +72,8 @@ organization in ThisBuild := "in.nvilla"
 lazy val testSettings = Seq(
   testOptions  in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   scalaJSStage in Test := FastOptStage,
-  jsEnv        in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv())
+//  jsEnv        in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+)
 
 lazy val publishSettings = Seq(
   publishMavenStyle := true,
