@@ -51,7 +51,7 @@ lazy val `examples` = project
   .settings(noPublishSettings: _*)
   .settings(
     test := {},
-    //emitSourceMaps := true,
+    scalaJSLinkerConfig ~= { _.withSourceMap(true) },
     libraryDependencies += "com.github.japgolly.scalacss" %%% "core" % "0.7.0",
     artifactPath in (Compile, fastOptJS) :=
       ((crossTarget in (Compile, fastOptJS)).value /
@@ -72,7 +72,7 @@ organization in ThisBuild := "in.nvilla"
 lazy val testSettings = Seq(
   testOptions  in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   scalaJSStage in Test := FastOptStage,
-//  jsEnv        in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+  jsEnv        in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
 )
 
 lazy val publishSettings = Seq(
