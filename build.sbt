@@ -1,4 +1,5 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+import sbt.Keys.libraryDependencies
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -63,6 +64,16 @@ lazy val `monadic-rx-cats`    = crossProject(JSPlatform, JVMPlatform)
     testSettings,
     libraryDependencies += "org.typelevel" %%% "cats-core" % cats)
 
+lazy val `monadic-scalatags` = project
+  .enablePlugins(ScalaJSPlugin)
+  .dependsOn(`monadic-rx`.js)
+  .settings(
+    testSettings,
+    libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.9.3",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "1.1.0",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatest % Test
+  )
+
 lazy val `examples` = project
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(`monadic-html`, `monadic-rx-catsJS`)
@@ -70,7 +81,9 @@ lazy val `examples` = project
     testSettings,
     skip in publish := true,
     test in Test := {},
-    libraryDependencies += "com.github.japgolly.scalacss" %%% "core" % "0.6.1")
+    libraryDependencies += "com.github.japgolly.scalacss" %%% "core" % "0.6.1",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "1.1.0",
+  )
 
 
 lazy val testSettings = Seq(
